@@ -26,12 +26,15 @@ include(Warnings)
 include(Sanitizers)   # global, so third-party code is instrumented consistently
 include(Dependencies)
 
+if(MESIA_BUILD_TESTS)
+    enable_testing()
+endif()
+
 add_subdirectory(src/core)
 if(MESIA_BUILD_FRONTEND)
     add_subdirectory(src/frontend)
 endif()
 
 if(MESIA_BUILD_TESTS)
-    enable_testing()
     add_subdirectory(tests)
 endif()

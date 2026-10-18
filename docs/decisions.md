@@ -10,3 +10,7 @@ One line each, with the reason. Newest at the bottom.
 - 2026-10-17 — All binaries and DLLs go to `build/<preset>/bin/<config>`: SDL3.dll and the ASan runtime are found without PATH changes.
 - 2026-10-17 — License: GPL-3.0-or-later (full text in `LICENSE`, from gnu.org): maintainer's choice; copyleft keeps the engine and any forks open, in line with "free and open source".
 - 2026-10-17 — Every C++ and CMake source file starts with `SPDX-License-Identifier: GPL-3.0-or-later`: the license is machine-readable per file and survives files being copied out of the repo.
+- 2026-10-17 — CI is GitHub Actions: Windows (windows-latest, MSVC) and Linux (Ubuntu 24.04, GCC), Debug and Release each, running every ctest test: the repo is on GitHub and its runners are free for public repos.
+- 2026-10-17 — The Windows preset doesn't name a Visual Studio version; CMake picks the newest installed: works locally on VS 2026 and on CI runners whatever VS they ship.
+- 2026-10-17 — The frontend smoke test runs under ctest with `SDL_VIDEO_DRIVER=dummy`: CI machines have no display.
+- 2026-10-17 — `.gitattributes` forces LF line endings: identical files on Windows and Linux.

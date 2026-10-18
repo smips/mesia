@@ -9,9 +9,8 @@
     },
     {
       "name": "windows",
-      "displayName": "Windows (Visual Studio, MSVC)",
+      "displayName": "Windows (newest Visual Studio, MSVC)",
       "inherits": "base",
-      "generator": "Visual Studio 18 2026",
       "architecture": "x64",
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
     },
