@@ -1,0 +1,19 @@
+# Build output
+/build/
+/out/
+CMakeUserPresets.json
+compile_commands.json
+
+# IDEs
+/.vs/
+/.vscode/
+/.idea/
+*.user
+
+# Claude Code files (CLAUDE.md, CLAUDE.local.md, .claude/)
+CLAUDE*
+.claude/
+
+# NES ROMs. Fuller ROM and extracted-data blocking (plus a pre-commit
+# check) is a separate week 1 task; see CLAUDE.md.
+*.nes
