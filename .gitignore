@@ -14,6 +14,21 @@ compile_commands.json
 CLAUDE*
 .claude/
 
-# NES ROMs. Fuller ROM and extracted-data blocking (plus a pre-commit
-# check) is a separate week 1 task; see CLAUDE.md.
-*.nes
+# ROMs and anything derived from them. Never commit these (see the hard
+# rules); the character classes match any letter case, since Linux and
+# macOS treat case as significant.
+*.[nN][eE][sS]
+*.[uU][nN][fF]
+*.[uU][nN][iI][fF]
+*.[fF][dD][sS]
+*.[nN][sS][fF]
+*.[nN][sS][fF][eE]
+*.[pP][rR][gG]
+*.[cC][hH][rR]
+/roms/
+/extracted/
+
+# Battery saves and emulator save states, which hold game RAM
+*.[sS][aA][vV]
+*.[sS][rR][mM]
+*.[mM][sS][sS]

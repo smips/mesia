@@ -14,3 +14,4 @@ One line each, with the reason. Newest at the bottom.
 - 2026-10-17 — The Windows preset doesn't name a Visual Studio version; CMake picks the newest installed: works locally on VS 2026 and on CI runners whatever VS they ship.
 - 2026-10-17 — The frontend smoke test runs under ctest with `SDL_VIDEO_DRIVER=dummy`: CI machines have no display.
 - 2026-10-17 — `.gitattributes` forces LF line endings: identical files on Windows and Linux.
+- 2026-10-17 — `.gitignore` blocks ROM formats (.nes, .unf/.unif, .fds, .nsf/.nsfe, .prg, .chr), `/roms/`, `/extracted/`, battery saves and Mesen save states, matching any letter case: a backstop for the "no ROM-derived data" rule on case-sensitive filesystems.
