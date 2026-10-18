@@ -15,3 +15,4 @@ One line each, with the reason. Newest at the bottom.
 - 2026-10-17 — The frontend smoke test runs under ctest with `SDL_VIDEO_DRIVER=dummy`: CI machines have no display.
 - 2026-10-17 — `.gitattributes` forces LF line endings: identical files on Windows and Linux.
 - 2026-10-17 — `.gitignore` blocks ROM formats (.nes, .unf/.unif, .fds, .nsf/.nsfe, .prg, .chr), `/roms/`, `/extracted/`, battery saves and Mesen save states, matching any letter case: a backstop for the "no ROM-derived data" rule on case-sensitive filesystems.
+- 2026-10-17 — No pre-commit hook for now: `.gitignore` plus the README rules are judged enough due diligence for a solo project; revisit if contributors join.
