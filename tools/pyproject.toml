@@ -6,16 +6,17 @@ version = "0.1.0"
 description = "Development tools for Mesia: ROM data dumper, input replay recorder, trace and RAM diff against Mesen"
 license = "GPL-3.0-or-later"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["pick==2.6.0"]
 
 [dependency-groups]
 dev = [
     "pytest==9.1.1",
-    "ruff==0.17.1",
+    "ruff==0.17.1"
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 
 [tool.ruff]
 line-length = 100
