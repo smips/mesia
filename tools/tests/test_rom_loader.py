@@ -4,9 +4,12 @@
 # real ROM (or anything derived from one) is ever needed or committed.
 
 from rom_loader import (
+    CHR_OUTPUT_FILE,
     FILE_EXPECTED_CHR_SIZE,
     FILE_EXPECTED_PRG_SIZE,
+    PRG_OUTPUT_FILE,
     ROM,
+    extract_rom_data,
 )
 
 
@@ -31,3 +34,23 @@ def test_valid_header_loads_prg_and_chr():
     assert rom.header.mapper == 4
     assert rom.prg == prg
     assert rom.chr == chr_data
+
+
+def test_extract_rom_data(tmp_path):
+    prg = b"\x11" * FILE_EXPECTED_PRG_SIZE
+    chr_data = b"\x22" * FILE_EXPECTED_CHR_SIZE
+
+    rom = ROM(make_header() + prg + chr_data)
+
+    out_dir = tmp_path / "extracted"
+    extract_rom_data(rom, out_dir)
+
+    prg_file = out_dir / PRG_OUTPUT_FILE
+    chr_file = out_dir / CHR_OUTPUT_FILE
+
+    assert prg_file.exists()
+    assert chr_file.exists()
+
+    assert prg_file.read_bytes() == prg
+    assert chr_file.read_bytes() == chr_data
+    assert sorted(p.name for p in out_dir.iterdir()) == sorted([CHR_OUTPUT_FILE, PRG_OUTPUT_FILE])
