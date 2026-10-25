@@ -9,16 +9,19 @@
 ##########################################################################################
 
 
+import contextlib
 import hashlib
 import os
 import sys
 from binascii import crc32
+from pathlib import Path
 from typing import Final
 
 from pick import pick
 
-ROM_PATH: Final[str] = "..\\roms"
-# ROM_PATH: Final[str] = "roms"
+SCRIPT_DIR: Final[Path] = Path(__file__).parent.resolve()
+ROM_PATH: Final[Path] = Path(SCRIPT_DIR / ".." / "roms").resolve()
+EXTRACT_PATH: Final[Path] = Path(SCRIPT_DIR / ".." / "extracted").resolve()
 
 # Expected Sizes
 FILE_EXPECTED_HEADER_SIZE: Final[int] = 16  # header size in bytes
@@ -40,6 +43,7 @@ HEADER_CHR_BANK_SIZE: Final[int] = 8192  # CHR bank size in bytes (8KB)
 class Colors:
     OKGREEN = "\033[92m"
     FAIL = "\033[91m"
+    INFO = "\033[94m"
     ENDC = "\033[0m"
     BOLD = "\033[1m"
 
@@ -104,6 +108,10 @@ def print_success(message: str):
     print(f"{Colors.BOLD}{Colors.OKGREEN}SUCCESS: {message}{Colors.ENDC}")
 
 
+def print_info(message: str):
+    print(f"{Colors.BOLD}{Colors.INFO}INFO: {message}{Colors.ENDC}")
+
+
 def check_rom_sha1(rom: ROM) -> tuple[bool, str]:
     digest = hashlib.sha1()
     digest.update(rom.prg)
@@ -119,7 +127,26 @@ def check_rom_crc32(rom: ROM) -> tuple[bool, str]:
     return crc32_str == ROM_EXPECTED_CRC32, crc32_str
 
 
+def write_binary_file(file_path: str, data: bytes) -> None:
+    tmp_path = file_path + ".tmp"
+    try:
+        with open(tmp_path, "wb") as f:
+            f.write(data)
+        os.replace(tmp_path, file_path)
+    except OSError:
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(tmp_path)
+        raise
+
+
 def main():
+    print("\n\nCrystalis ROM Loader and Extractor")
+    print("==================================")
+    print_info(f"Script directory: {SCRIPT_DIR}")
+    print_info(f"ROM directory: {ROM_PATH}")
+    print_info(f"Extraction directory: {EXTRACT_PATH}")
+    print("==================================")
+
     if not os.path.isdir(ROM_PATH):
         print_fail(f"Directory {ROM_PATH} does not exist.")
         sys.exit(1)
@@ -128,8 +155,9 @@ def main():
     if len(roms) > 0:
         option, index = pick(roms, "Select a ROM to extract:")
         file_path = os.path.join(ROM_PATH, option)
-        print(f"You selected: {index}: {option}")
-        print("\n\nReading ROM...")
+        print_info(f"Selected ROM: {file_path}")
+        print("\n\n")
+        print_info("Reading ROM...")
 
         # Read the selected ROM file
         with open(file_path, "rb") as f:
@@ -142,7 +170,7 @@ def main():
             sys.exit(1)
 
         # Check ROM SHA-1
-        print("Calculating ROM data SHA-1 hash...")
+        print_info("Calculating ROM data SHA-1 hash...")
         res, sha1_hash = check_rom_sha1(rom)
         if not res:
             print_fail("The ROM data does not have the expected SHA-1 hash.")
@@ -151,7 +179,7 @@ def main():
             sys.exit(1)
 
         # Check ROM CRC32
-        print("Calculating ROM data CRC32 hash...")
+        print_info("Calculating ROM data CRC32 hash...")
         res, crc32_hash = check_rom_crc32(rom)
         if not res:
             print_fail("The ROM data does not have the expected CRC32 hash.")
@@ -160,9 +188,44 @@ def main():
             sys.exit(1)
 
         print_success("ROM data is valid!")
+        print("\n\n")
+        print_info("ROM Information:")
+        print("==================================")
         rom.print_info()
+        print("==================================\n\n")
 
-        print("Extracting PRG and CHR data from ROM...")
+        print_info("Extracting PRG and CHR data from ROM...")
+
+        # Create the extraction directory if it doesn't exist
+        try:
+            os.makedirs(EXTRACT_PATH, exist_ok=True)
+        except OSError as e:
+            print_fail(f"Error occurred while creating extraction directory: {e}")
+            sys.exit(1)
+
+        # Define the paths for the extracted PRG and CHR files
+        prg_file_path = os.path.join(EXTRACT_PATH, "prg.bin")
+        chr_file_path = os.path.join(EXTRACT_PATH, "chr.bin")
+
+        # Extract PRG data
+        print_info(f"Writing PRG data to {prg_file_path}...")
+        try:
+            write_binary_file(prg_file_path, rom.prg)
+        except OSError as e:
+            print_fail(f"Error occurred while writing PRG data: {e}")
+            sys.exit(1)
+        print_info(f"Finished writing PRG data to {prg_file_path}.")
+
+        # Extract CHR data
+        print_info(f"Writing CHR data to {chr_file_path}...")
+        try:
+            write_binary_file(chr_file_path, rom.chr)
+        except OSError as e:
+            print_fail(f"Error occurred while writing CHR data: {e}")
+            sys.exit(1)
+        print_info(f"Finished writing CHR data to {chr_file_path}.")
+
+        print_success("Extraction completed successfully!")
 
     else:
         print_fail("No files found in the directory.")
