@@ -39,6 +39,10 @@ HEADER_EXPECTED_MAPPER: Final[int] = 4  # Expected mapper number for the ROM fil
 HEADER_PRG_BANK_SIZE: Final[int] = 16384  # PRG bank size in bytes (16KB)
 HEADER_CHR_BANK_SIZE: Final[int] = 8192  # CHR bank size in bytes (8KB)
 
+# Output file names
+PRG_OUTPUT_FILE: Final[str] = "prg.bin"
+CHR_OUTPUT_FILE: Final[str] = "chr.bin"
+
 
 class Colors:
     OKGREEN = "\033[92m"
@@ -127,8 +131,8 @@ def check_rom_crc32(rom: ROM) -> tuple[bool, str]:
     return crc32_str == ROM_EXPECTED_CRC32, crc32_str
 
 
-def write_binary_file(file_path: str, data: bytes) -> None:
-    tmp_path = file_path + ".tmp"
+def write_binary_file(file_path: Path, data: bytes) -> None:
+    tmp_path = file_path.with_name(file_path.name + ".tmp")
     try:
         with open(tmp_path, "wb") as f:
             f.write(data)
@@ -139,8 +143,20 @@ def write_binary_file(file_path: str, data: bytes) -> None:
         raise
 
 
+def extract_rom_data(rom: ROM, extract_path: Path) -> None:
+    # Create the extraction directory if it doesn't exist
+    extract_path.mkdir(parents=True, exist_ok=True)
+
+    path_data_pairs = [
+        [extract_path / PRG_OUTPUT_FILE, rom.prg],
+        [extract_path / CHR_OUTPUT_FILE, rom.chr],
+    ]
+    for path, d in path_data_pairs:
+        write_binary_file(path, d)
+
+
 def main():
-    print("\n\nCrystalis ROM Loader and Extractor")
+    print("\nCrystalis ROM Loader and Extractor")
     print("==================================")
     print_info(f"Script directory: {SCRIPT_DIR}")
     print_info(f"ROM directory: {ROM_PATH}")
@@ -156,7 +172,7 @@ def main():
         option, index = pick(roms, "Select a ROM to extract:")
         file_path = os.path.join(ROM_PATH, option)
         print_info(f"Selected ROM: {file_path}")
-        print("\n\n")
+        print("\n")
         print_info("Reading ROM...")
 
         # Read the selected ROM file
@@ -188,42 +204,22 @@ def main():
             sys.exit(1)
 
         print_success("ROM data is valid!")
-        print("\n\n")
+        print("\n")
         print_info("ROM Information:")
         print("==================================")
         rom.print_info()
-        print("==================================\n\n")
+        print("==================================\n")
 
         print_info("Extracting PRG and CHR data from ROM...")
 
-        # Create the extraction directory if it doesn't exist
+        # Extract the PRG and CHR data to the extraction directory
+        print_info(f"Extracting PRG and CHR data to {EXTRACT_PATH}...")
         try:
-            os.makedirs(EXTRACT_PATH, exist_ok=True)
+            extract_rom_data(rom, EXTRACT_PATH)
         except OSError as e:
-            print_fail(f"Error occurred while creating extraction directory: {e}")
+            print_fail(f"Error occurred while extracting ROM data: {e}")
             sys.exit(1)
-
-        # Define the paths for the extracted PRG and CHR files
-        prg_file_path = os.path.join(EXTRACT_PATH, "prg.bin")
-        chr_file_path = os.path.join(EXTRACT_PATH, "chr.bin")
-
-        # Extract PRG data
-        print_info(f"Writing PRG data to {prg_file_path}...")
-        try:
-            write_binary_file(prg_file_path, rom.prg)
-        except OSError as e:
-            print_fail(f"Error occurred while writing PRG data: {e}")
-            sys.exit(1)
-        print_info(f"Finished writing PRG data to {prg_file_path}.")
-
-        # Extract CHR data
-        print_info(f"Writing CHR data to {chr_file_path}...")
-        try:
-            write_binary_file(chr_file_path, rom.chr)
-        except OSError as e:
-            print_fail(f"Error occurred while writing CHR data: {e}")
-            sys.exit(1)
-        print_info(f"Finished writing CHR data to {chr_file_path}.")
+        print_info(f"Finished extracting PRG and CHR data to {EXTRACT_PATH}.")
 
         print_success("Extraction completed successfully!")
 
