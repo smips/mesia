@@ -17,3 +17,5 @@ One line each, with the reason. Newest at the bottom.
 - 2026-10-17 — `.gitignore` blocks ROM formats (.nes, .unf/.unif, .fds, .nsf/.nsfe, .prg, .chr), `/roms/`, `/extracted/`, battery saves and Mesen save states, matching any letter case: a backstop for the "no ROM-derived data" rule on case-sensitive filesystems.
 - 2026-10-17 — No pre-commit hook for now: `.gitignore` plus the README rules are judged enough due diligence for a solo project; revisit if contributors join.
 - 2026-10-17 — Python tools live in `tools/` with one `pyproject.toml` (Python 3.12+, the Ubuntu 24.04 default); dev tools pytest and ruff pinned in a dependency group; works with plain venv+pip or uv.
+- 2026-10-29 — Expected Crystalis US hashes are of the headerless PRG+CHR data (SHA-1 `8A49FE60B6A151C055A63639894CD366935A7EE9`, CRC32 `1335CB05`), verified against No-Intro: correct dumps with differing iNES/NES 2.0 headers still match.
+- 2026-10-29 — `.editorconfig` sets LF, UTF-8, final newline, trimmed trailing whitespace (except Markdown), 4-space indent (2 for YAML/JSON): editors write files that already match `.gitattributes` and ruff.
