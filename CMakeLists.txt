@@ -20,11 +20,13 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(MESIA_SANITIZERS "Enable sanitizers in Debug builds" ON)
 option(MESIA_BUILD_TESTS "Build the Catch2 test suite" ON)
 option(MESIA_BUILD_FRONTEND "Build the SDL3 frontend" ON)
+option(MESIA_BUILD_EXCEPTIONS "Build the exceptions library" ON)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(Warnings)
 include(Sanitizers)   # global, so third-party code is instrumented consistently
 include(Dependencies)
+include(FetchContent)
 
 if(MESIA_BUILD_TESTS)
     enable_testing()
@@ -37,4 +39,8 @@ endif()
 
 if(MESIA_BUILD_TESTS)
     add_subdirectory(tests)
+endif()
+
+if(MESIA_BUILD_EXCEPTIONS)
+    add_subdirectory(src/exceptions)
 endif()
