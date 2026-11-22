@@ -3,18 +3,26 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace mesia {
+    class CartridgeError : public std::runtime_error {
+        public:
+            CartridgeError(const std::string& message) : std::runtime_error(message) { };
+    }; // class CartridgeError
+
     class Cartridge {
         private:
-            std::vector<unsigned char> _prg; // PRG ROM data
-            std::vector<unsigned char> _chr; // CHR ROM data
+            std::vector<uint8_t> _prg; // PRG ROM data
+            std::vector<uint8_t> _chr; // CHR ROM data
+            static constexpr const char* PRG_FILENAME = "prg.bin";
+            static constexpr const char* CHR_FILENAME = "chr.bin";
 
         public:
             Cartridge();
             ~Cartridge() = default;
-            bool load(const std::string& filename);
-            bool read_prg(unsigned short address, unsigned char &value) const;
-            bool read_chr(unsigned short address, unsigned char &value) const;
+            bool load(const std::string& path);
+            bool read_prg(unsigned short address, uint8_t &value) const;
+            bool read_chr(unsigned short address, uint8_t &value) const;
     };
 } // namespace mesia

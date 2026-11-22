@@ -40,7 +40,3 @@ endif()
 if(MESIA_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
-
-if(MESIA_BUILD_EXCEPTIONS)
-    add_subdirectory(src/exceptions)
-endif()

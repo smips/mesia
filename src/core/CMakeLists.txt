@@ -7,7 +7,6 @@ add_library(mesia_core STATIC
 add_library(mesia::core ALIAS mesia_core)
 
 target_include_directories(mesia_core PUBLIC include)
-target_include_directories(mesia_core PUBLIC ../exceptions/include)
 target_compile_features(mesia_core PUBLIC cxx_std_20)
 mesia_set_warnings(mesia_core)
 
