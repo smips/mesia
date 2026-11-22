@@ -11,8 +11,7 @@ namespace mesia::test {
             TempDir() {
                 std::random_device rd;
                 _path = std::filesystem::temp_directory_path();
-                _path.append("/mesia_test_");
-                _path.append(std::to_string(rd()));
+                _path.append("mesia_test_" + std::to_string(rd()));
                 std::filesystem::create_directory(_path);
             }
 

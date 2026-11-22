@@ -32,13 +32,13 @@ namespace mesia {
     }
 
     bool Cartridge::read_prg(unsigned short address, uint8_t &value) const {
-        value = address < sizeof(_prg) ? _prg[address] : 0;
-        return address < sizeof(_prg);
+        value = address < _prg.size() ? _prg[address] : 0;
+        return address < _prg.size();
     }
 
     bool Cartridge::read_chr(unsigned short address, uint8_t &value) const {
-        value = address < sizeof(_chr) ? _chr[address] : 0;
-        return address < sizeof(_chr);
+        value = address < _chr.size() ? _chr[address] : 0;
+        return address < _chr.size();
     }
 
 
