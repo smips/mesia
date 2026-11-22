@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <stdexcept>
 
 namespace mesia {
     class CartridgeError : public std::runtime_error {
@@ -21,8 +22,8 @@ namespace mesia {
         public:
             Cartridge();
             ~Cartridge() = default;
-            bool load(const std::string& path);
-            bool read_prg(unsigned short address, uint8_t &value) const;
-            bool read_chr(unsigned short address, uint8_t &value) const;
+            void load(const std::string& path);
+            bool read_prg(uint32_t address, uint8_t &value) const;
+            bool read_chr(uint32_t address, uint8_t &value) const;
     };
 } // namespace mesia

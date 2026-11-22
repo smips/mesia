@@ -11,32 +11,43 @@ namespace mesia {
         _chr.assign(0x20000, 0); // Reserve space for 128KB of CHR ROM
     }
 
-    bool Cartridge::load([[maybe_unused]] const std::string& path) {
-        bool result = false;
-        std::filesystem::path data_path(path);
-        std::filesystem::path prg_path(data_path.parent_path() / PRG_FILENAME);
-        std::filesystem::path chr_path(data_path.parent_path() / CHR_FILENAME);
-        if(std::filesystem::exists(prg_path) &&
-           std::filesystem::exists(chr_path) &&
-           std::filesystem::file_size(prg_path) == _prg.size() &&
-           std::filesystem::file_size(chr_path) == _chr.size()) {
+    void Cartridge::load(const std::string& path) {
+        // Construct the paths to the PRG and CHR files based on the provided path
+        const std::filesystem::path data_path(path);
+        const std::filesystem::path prg_path(data_path / PRG_FILENAME);
+        const std::filesystem::path chr_path(data_path / CHR_FILENAME);
 
-
-
-            // Load the cartridge file into _prg and _chr
-            // This is a placeholder for actual loading logic
-            throw NotImplementedException();
+        // Check if the files exist and have the expected sizes
+        if(!std::filesystem::exists(prg_path)) {
+            throw CartridgeError("PRG ROM file not found");
+        }
+        if(!std::filesystem::exists(chr_path)) {
+            throw CartridgeError("CHR ROM file not found");
+        }
+        if(std::filesystem::file_size(prg_path) != _prg.size()) {
+            throw CartridgeError("PRG ROM file size does not match expected size");
+        }
+        if(std::filesystem::file_size(chr_path) != _chr.size()) {
+            throw CartridgeError("CHR ROM file size does not match expected size");
         }
 
-        return result;
+        // Open the files and read the data into the vectors
+        std::ifstream prg_file(prg_path, std::ios::binary);
+        std::ifstream chr_file(chr_path, std::ios::binary);
+        if(!prg_file.read(reinterpret_cast<char*>(_prg.data()), _prg.size())) {
+            throw CartridgeError("Failed to read PRG ROM data");
+        }
+        if(!chr_file.read(reinterpret_cast<char*>(_chr.data()), _chr.size())) {
+            throw CartridgeError("Failed to read CHR ROM data");
+        }
     }
 
-    bool Cartridge::read_prg(unsigned short address, uint8_t &value) const {
+    bool Cartridge::read_prg(uint32_t address, uint8_t &value) const {
         value = address < _prg.size() ? _prg[address] : 0;
         return address < _prg.size();
     }
 
-    bool Cartridge::read_chr(unsigned short address, uint8_t &value) const {
+    bool Cartridge::read_chr(uint32_t address, uint8_t &value) const {
         value = address < _chr.size() ? _chr[address] : 0;
         return address < _chr.size();
     }
