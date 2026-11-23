@@ -30,4 +30,4 @@ namespace mesia::test {
         private:
             std::filesystem::path _path;
     };
-}; // namespace mesia::test
+} // namespace mesia::test
