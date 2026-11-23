@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 add_library(mesia_core STATIC
+    src/cartridge.cpp
+    src/mmc3.cpp
     src/version.cpp)
 add_library(mesia::core ALIAS mesia_core)
 

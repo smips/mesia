@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 add_executable(mesia_tests
-    version_test.cpp)
+    core/version_test.cpp
+    core/cartridge_test.cpp
+    )
+target_include_directories(mesia_tests PRIVATE support)
 target_link_libraries(mesia_tests PRIVATE mesia::core Catch2::Catch2WithMain)
 mesia_set_warnings(mesia_tests)
 mesia_copy_sanitizer_runtime(mesia_tests)

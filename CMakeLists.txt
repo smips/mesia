@@ -25,6 +25,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 include(Warnings)
 include(Sanitizers)   # global, so third-party code is instrumented consistently
 include(Dependencies)
+include(FetchContent)
 
 if(MESIA_BUILD_TESTS)
     enable_testing()
