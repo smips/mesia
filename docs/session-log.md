@@ -291,3 +291,28 @@ Three sections per session: done, exact next step, unresolved. One bullet per it
 - If the CHR read fails after the PRG read succeeds, `_prg` is already overwritten (harmless while a failed load is fatal)
 - Add build and test scripts for every configuration through the `CMakePresets.json` presets, possibly as CMake workflow presets
 - Linux build of these changes only confirmed once CI runs
+
+## 2026-11-23 (MMC3 registers)
+
+**Done**
+- Decided on the `Mmc3` structure: register state grouped in plain structs by function (`BankControl` for `$8000`/`$8001`, `Irq` for `$C000`–`$E001`), with mirroring and PRG RAM flags as members; all logic stays in `Mmc3`
+- Decided to bring bank select forward from week 3: frame 1 only stores to `$2000` and `$2001`, so the gate doesn't exercise it, but it's small and self-contained
+- Testing plan: test `Mmc3` on its own through `write`, `read_prg` and `read_chr`, using synthetic PRG/CHR files whose bytes identify their bank and offset (runs on CI; real-ROM checks could be an optional `[rom]` suite later)
+- `Mmc3` declared with a `const Cartridge&` constructor, `write`, `read_prg` and `read_chr`
+- `write` decodes the register with `address & 0xE001` and stores all eight registers (bank select, bank data, mirroring, PRG RAM protect, IRQ latch, reload, disable, enable); writes take effect immediately
+- `read_prg` and `read_chr` throw `NotImplementedException`, which now takes the function name for its message
+- Added an empty `tests/core/mmc3_test.cpp` to `tests/CMakeLists.txt`
+- Windows Debug builds clean; the 6 existing tests pass
+
+**Next**
+- In `tests/core/mmc3_test.cpp`, write a helper that creates synthetic `prg.bin` (32 × 8 KiB) and `chr.bin` (128 × 1 KiB) in a `TempDir`, with byte 0 of each bank set to its bank number and the rest set to `bank ^ (offset & 0xFF)`, then write a failing test that power-on `read_prg(0xE000)` returns 31 and `read_prg(0xC000)` returns 30
+- Then implement `read_prg`: precompute four 8 KiB bank offsets on every `$8000`/`$8001` write (R6/R7 masked with `0x1F`; PRG mode swaps `$8000` and `$C000`), and add tests for R6/R7 switching, PRG mode 1 and out-of-range bank wrap
+
+**Unresolved**
+- `$A000` mirroring is inverted: `horizontalMirroring = (value & 0x01) == 0` should be `!= 0` (bit 0 set means horizontal)
+- `read_chr` parameter is named `cpu_address` but takes a PPU address (`$0000`–`$1FFF`)
+- `exceptions.hpp` uses `std::string` without including `<string>` (compiles through `<stdexcept>` today)
+- `mmc3_test.cpp` has no SPDX header yet
+- R0/R1 must ignore their low bit (2 KiB CHR banks), and R6/R7 their top two bits, when bank offsets are computed
+- PRG RAM at `$6000`–`$7FFF` and open bus for a disabled PRG RAM are not handled (not needed until the game uses them)
+- Add build and test scripts for every configuration through the `CMakePresets.json` presets, possibly as CMake workflow presets

@@ -3,6 +3,7 @@
 add_executable(mesia_tests
     core/version_test.cpp
     core/cartridge_test.cpp
+    core/mmc3_test.cpp
     )
 target_include_directories(mesia_tests PRIVATE support)
 target_link_libraries(mesia_tests PRIVATE mesia::core Catch2::Catch2WithMain)

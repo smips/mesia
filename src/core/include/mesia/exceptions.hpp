@@ -7,7 +7,7 @@ namespace mesia {
 
     class NotImplementedException : public std::logic_error {
         public:
-            NotImplementedException() : std::logic_error("Function not yet implemented") { };
+            NotImplementedException(const char * const func) : std::logic_error(func + std::string(" not yet implemented")) { };
     }; // class NotImplementedException
 
 } // namespace mesia
