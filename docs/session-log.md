@@ -302,6 +302,7 @@ Three sections per session: done, exact next step, unresolved. One bullet per it
 - `write` decodes the register with `address & 0xE001` and stores all eight registers (bank select, bank data, mirroring, PRG RAM protect, IRQ latch, reload, disable, enable); writes take effect immediately
 - `read_prg` and `read_chr` throw `NotImplementedException`, which now takes the function name for its message
 - Added an empty `tests/core/mmc3_test.cpp` to `tests/CMakeLists.txt`
+- Fixed after review: `$A000` sets `horizontalMirroring` when bit 0 is set (iNES/Mesen convention, recorded in `docs/decisions.md`); `read_chr` takes `ppu_address`; `exceptions.hpp` includes `<string>`
 - Windows Debug builds clean; the 6 existing tests pass
 
 **Next**
@@ -309,9 +310,6 @@ Three sections per session: done, exact next step, unresolved. One bullet per it
 - Then implement `read_prg`: precompute four 8 KiB bank offsets on every `$8000`/`$8001` write (R6/R7 masked with `0x1F`; PRG mode swaps `$8000` and `$C000`), and add tests for R6/R7 switching, PRG mode 1 and out-of-range bank wrap
 
 **Unresolved**
-- `$A000` mirroring is inverted: `horizontalMirroring = (value & 0x01) == 0` should be `!= 0` (bit 0 set means horizontal)
-- `read_chr` parameter is named `cpu_address` but takes a PPU address (`$0000`–`$1FFF`)
-- `exceptions.hpp` uses `std::string` without including `<string>` (compiles through `<stdexcept>` today)
 - `mmc3_test.cpp` has no SPDX header yet
 - R0/R1 must ignore their low bit (2 KiB CHR banks), and R6/R7 their top two bits, when bank offsets are computed
 - PRG RAM at `$6000`–`$7FFF` and open bus for a disabled PRG RAM are not handled (not needed until the game uses them)

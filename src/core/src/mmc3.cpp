@@ -21,7 +21,7 @@ namespace mesia {
                 break;
             case 0xA000:
                 // Handle mirroring control register
-                horizontalMirroring = (value & 0x01) == 0; // Bit 0 determines mirroring mode
+                horizontalMirroring = (value & 0x01) != 0; // Bit 0 determines mirroring mode
                 break;
             case 0xA001:
                 // Handle PRG RAM protect register
@@ -58,7 +58,7 @@ namespace mesia {
         throw NotImplementedException(__func__);
     }
 
-    uint8_t Mmc3::read_chr([[maybe_unused]] uint16_t cpu_address) const {
+    uint8_t Mmc3::read_chr([[maybe_unused]] uint16_t ppu_address) const {
         // Implement the read logic for CHR ROM here
         throw NotImplementedException(__func__);
     }

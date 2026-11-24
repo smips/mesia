@@ -12,7 +12,7 @@ namespace mesia {
             ~Mmc3() = default;
             void write(uint16_t address, uint8_t value);
             uint8_t read_prg(uint16_t cpu_address) const;
-            uint8_t read_chr(uint16_t cpu_address) const;
+            uint8_t read_chr(uint16_t ppu_address) const;
 
         private:
             // Define a struct to represent the control registers at 0x8000 and 0x8001
